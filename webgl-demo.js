@@ -55,7 +55,7 @@ function main() {
 
     void main(void) {
         vec4 sampledColor = texture2D(uTensorTexture, vec2(0.5, 0.5));
-        gl_FragColor = sampledColor;
+        gl_FragColor = vColor;
     }
   `;
 

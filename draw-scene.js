@@ -1,3 +1,4 @@
+import { readTextureData } from "./debug.js";
 function drawScene(gl, programInfo, buffers, cubeRotation) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
     gl.clearDepth(1.0); // Clear everything
@@ -88,6 +89,7 @@ function drawScene(gl, programInfo, buffers, cubeRotation) {
     }
 
     // Start of the buggy code...
+    
     const backend = tf.backend();
 
     // Initialize tensor
@@ -107,10 +109,12 @@ function drawScene(gl, programInfo, buffers, cubeRotation) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    gl.bindTexture(gl.TEXTURE_2D, null);
+    //gl.bindTexture(gl.TEXTURE_2D, null);
     
     gl.uniform1i(programInfo.uniformLocations.texture, 0);
     // End of the buggy code
+    const buffer = readTextureData(gl, texture);
+    console.log(`Value of texture in buffer: ${buffer}`)
 }
 
 // Tell WebGL how to pull out the positions from the position
