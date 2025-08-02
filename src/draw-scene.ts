@@ -1,5 +1,42 @@
-import { readTextureData } from "./debug.js";
-function drawScene(gl, programInfo, buffers, cubeRotation) {
+import { readTextureData, createTextureFrameBuffer } from "./debug"
+import type { ProgramInfo } from "./index";
+import type { InitBuffersI } from "./init-buffers"
+var d = false;
+function drawScene(gl: WebGL2RenderingContext, programInfo: ProgramInfo, buffers: InitBuffersI, cubeRotation: number) {
+    
+    
+    /*// End of the buggy code
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, 1, 1, 0, gl.RGBA, gl.FLOAT, null);
+    
+    // Set parameters
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);*/
+    
+    // Attach to framebuffer
+    /*const framebuffer = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    
+    //tensor.print()
+    //tensor.dispose()
+    
+    // Start of the buggy code...
+    if (true) {
+        console.log("After draw:")
+        tensor.print()
+        const backend = tf.backend();
+        backend.uploadToGPU(tensor.dataId)
+        const textureData = tensor.dataToGPU({customTexShape: [1, 1]});
+        texture = textureData.texture;
+        tensor.print()
+        const bufferAfter = readTextureData(gl, texture)
+        console.log(bufferAfter)
+        d = true
+    }*/
+    
     gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
     gl.clearDepth(1.0); // Clear everything
     gl.enable(gl.DEPTH_TEST); // Enable depth testing
@@ -17,39 +54,50 @@ function drawScene(gl, programInfo, buffers, cubeRotation) {
     // and 100 units away from the camera.
 
     const fieldOfView = (45 * Math.PI) / 180; // in radians
-    const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+    const canvasWidth = (gl.canvas as HTMLCanvasElement).clientWidth;
+    const canvasHeight = (gl.canvas as HTMLCanvasElement).clientHeight
+    const aspect =  canvasWidth / canvasHeight;
     const zNear = 0.1;
     const zFar = 100.0;
+    
+    //@ts-ignore
     const projectionMatrix = mat4.create();
 
     // note: glmatrix.js always has the first argument
     // as the destination to receive the result.
+    //@ts-ignore
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
     // Set the drawing position to the "identity" point, which is
     // the center of the scene.
+    // @ts-ignore
     const modelViewMatrix = mat4.create();
 
     // Now move the drawing position a bit to where we want to
     // start drawing the square.
+    // @ts-ignore
     mat4.translate(
         modelViewMatrix, // destination matrix
         modelViewMatrix, // matrix to translate
         [-0.0, 0.0, -6.0]
     ); // amount to translate
-
+    
+    
+    // @ts-ignore
     mat4.rotate(
         modelViewMatrix, // destination matrix
         modelViewMatrix, // matrix to rotate
         cubeRotation, // amount to rotate in radians
         [0, 0, 1]
     ); // axis to rotate around (Z)
+    // @ts-ignore
     mat4.rotate(
         modelViewMatrix, // destination matrix
         modelViewMatrix, // matrix to rotate
         cubeRotation * 0.7, // amount to rotate in radians
         [0, 1, 0]
     ); // axis to rotate around (Y)
+    // @ts-ignore
     mat4.rotate(
         modelViewMatrix, // destination matrix
         modelViewMatrix, // matrix to rotate
@@ -60,8 +108,10 @@ function drawScene(gl, programInfo, buffers, cubeRotation) {
     // Tell WebGL how to pull out the positions from the position
     // buffer into the vertexPosition attribute.
     setPositionAttribute(gl, buffers, programInfo);
-
+    
     setColorAttribute(gl, buffers, programInfo);
+    
+    
 
     // Tell WebGL which indices to use to index the vertices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
@@ -81,45 +131,31 @@ function drawScene(gl, programInfo, buffers, cubeRotation) {
         modelViewMatrix
     );
 
+    
+
+    
+    
     {
         const vertexCount = 36;
         const type = gl.UNSIGNED_SHORT;
         const offset = 0;
         gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     }
-
-    // Start of the buggy code...
     
-    const backend = tf.backend();
-
-    // Initialize tensor
-    const tensor = tf.tensor([0.1, 0.8, 0.5, 1.0], [1, 4], "float32");
-    tensor.print()
-    backend.uploadToGPU(tensor.dataId); // Ensure new tensor is on GPU
-    gl.bindTexture(gl.TEXTURE_2D, null)
-    const textureData = backend.readToGPU(tensor.dataId);
-    const texture = textureData.texture;
-
-    // Bind the texture
-    gl.bindTexture(gl.TEXTURE_2D, texture);
+    /*gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+    const arr = new Float32Array(4);
+    gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.FLOAT, arr)
+    console.log(arr)
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.deleteFramebuffer(framebuffer);*/
     
-    // Set texture parameters that might be needed
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-    //gl.bindTexture(gl.TEXTURE_2D, null);
     
-    gl.uniform1i(programInfo.uniformLocations.texture, 0);
-    // End of the buggy code
-    const buffer = readTextureData(gl, texture);
-    console.log(`Value of texture in buffer: ${buffer}`)
+    
 }
 
 // Tell WebGL how to pull out the positions from the position
 // buffer into the vertexPosition attribute.
-function setPositionAttribute(gl, buffers, programInfo) {
+function setPositionAttribute(gl: WebGL2RenderingContext, buffers: InitBuffersI, programInfo: ProgramInfo) {
     const numComponents = 3;
     const type = gl.FLOAT; // the data in the buffer is 32bit floats
     const normalize = false; // don't normalize
@@ -140,7 +176,7 @@ function setPositionAttribute(gl, buffers, programInfo) {
 
 // Tell WebGL how to pull out the colors from the color buffer
 // into the vertexColor attribute.
-function setColorAttribute(gl, buffers, programInfo) {
+function setColorAttribute(gl: WebGL2RenderingContext, buffers: InitBuffersI, programInfo: ProgramInfo) {
     const numComponents = 4;
     const type = gl.FLOAT;
     const normalize = false;

@@ -1,0 +1,27 @@
+{
+    "name": "@you/your-package",
+    "version": "0.1.11",
+    "packageManager": "npm@11.5.1",
+    "main": "dist/index.mjs",
+    "type": "module",
+    "types": "dist/index.d.ts",
+    "files": [
+        "/dist"
+    ],
+    "scripts": {
+        "build": "rollup -c",
+        "dev": "rollup --config rollup.config.js --watch",
+        "test": "jest --silent=false",
+        "publish-patch": "npm version patch && hg ci -m \"Publish v$(jq -r '.version' package.json)\" && npm publish"
+    },
+    "dependencies": {
+        "@rollup/plugin-terser": "^0.4.4",
+        "@rollup/plugin-typescript": "^12.1.4",
+        "mat4": "^0.0.4",
+        "rollup": "^4.46.2",
+        "tfjs": "^0.6.0",
+        "tsc": "^2.0.4",
+        "tslib": "^2.8.1",
+        "typescript": "^5.9.2"
+    }
+}
