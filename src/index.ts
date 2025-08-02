@@ -1,4 +1,4 @@
-//@ts-nocheck
+
 import { initBuffers } from "./init-buffers";
 import { drawScene } from "./draw-scene";
 import { createTextureFrameBuffer } from "./debug";
@@ -153,7 +153,7 @@ function main() {
         requestAnimationFrame(render);
     }
 
-    async function initTF(canvas) {
+    async function initTF(canvas: HTMLCanvasElement) {
         const customBackendName = "custom-webgl";
 
         const kernels = tf.getKernelsForBackend("webgl");

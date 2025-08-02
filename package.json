@@ -17,6 +17,9 @@
     "dependencies": {
         "@rollup/plugin-terser": "^0.4.4",
         "@rollup/plugin-typescript": "^12.1.4",
+        "@tensorflow/tfjs": "^4.22.0",
+        "@types/gl-matrix": "^2.4.5",
+        "gl-matrix": "^3.4.3",
         "mat4": "^0.0.4",
         "rollup": "^4.46.2",
         "tfjs": "^0.6.0",

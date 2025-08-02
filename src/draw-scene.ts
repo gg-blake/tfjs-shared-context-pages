@@ -1,3 +1,4 @@
+
 import { readTextureData, createTextureFrameBuffer } from "./debug"
 import type { ProgramInfo } from "./index";
 import type { InitBuffersI } from "./init-buffers"
@@ -60,17 +61,18 @@ function drawScene(gl: WebGL2RenderingContext, programInfo: ProgramInfo, buffers
     const zNear = 0.1;
     const zFar = 100.0;
     
-    //@ts-ignore
+    
     const projectionMatrix = mat4.create();
 
     // note: glmatrix.js always has the first argument
     // as the destination to receive the result.
-    //@ts-ignore
+    
     mat4.perspective(projectionMatrix, fieldOfView, aspect, zNear, zFar);
 
     // Set the drawing position to the "identity" point, which is
     // the center of the scene.
     // @ts-ignore
+    
     const modelViewMatrix = mat4.create();
 
     // Now move the drawing position a bit to where we want to
